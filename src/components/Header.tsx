@@ -6,7 +6,7 @@ const Header = styled.header`
   display: flex;
   align-items: center;
   color: white;
-  padding: 0.25rem;
+  padding: 0.25rem 2rem;
 `
 
 export default Header;
