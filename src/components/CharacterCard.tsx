@@ -23,9 +23,11 @@ const Image = styled.img`
   width: 150px;
 `
 
-const CharacterCard = (character: CharacterCardProps) => {
-    console.log(character);
-    return (<></>)
+const CharacterCard = ({ character }: CharacterCardProps) => {
+    return  <Wrapper>
+    <Image src={character.image || ''} alt="icon" className="avatar" />
+    {character.name}
+</Wrapper>
 }
 
 export default CharacterCard

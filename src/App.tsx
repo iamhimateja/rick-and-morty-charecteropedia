@@ -34,7 +34,7 @@ const App = () => {
           <span>Rick and Morty Characteropedia</span>
         </Header>
         <Section>
-          {data?.characters?.results?.map(result => <CharacterCard key={result?.id} character={result} />)}
+          {data?.characters?.results?.map(result => result && <CharacterCard key={result.id} character={result} />)}
         </Section>
         <Footer />
       </AppWrapper>
