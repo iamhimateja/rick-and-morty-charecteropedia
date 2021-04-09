@@ -205,19 +205,6 @@ export type QueryEpisodesByIdsArgs = {
 };
 
 
-export type CharacterQueryVariables = Exact<{
-  id: Scalars['ID'];
-}>;
-
-
-export type CharacterQuery = (
-  { __typename?: 'Query' }
-  & { character?: Maybe<(
-    { __typename?: 'Character' }
-    & Pick<Character, 'id' | 'name' | 'image' | 'species'>
-  )> }
-);
-
 export type CharactersQueryVariables = Exact<{
   page?: Maybe<Scalars['Int']>;
 }>;
@@ -227,66 +214,37 @@ export type CharactersQuery = (
   { __typename?: 'Query' }
   & { characters?: Maybe<(
     { __typename?: 'Characters' }
-    & { results?: Maybe<Array<Maybe<(
-      { __typename?: 'Character' }
-      & Pick<Character, 'name' | 'status' | 'species' | 'type' | 'gender' | 'image' | 'created'>
-      & { episode?: Maybe<Array<Maybe<(
-        { __typename?: 'Episode' }
-        & Pick<Episode, 'episode' | 'name'>
-      )>>>, origin?: Maybe<(
-        { __typename?: 'Location' }
-        & Pick<Location, 'name'>
-      )>, location?: Maybe<(
-        { __typename?: 'Location' }
-        & Pick<Location, 'name'>
-      )> }
+    & { info?: Maybe<(
+      { __typename: 'Info' }
+      & Pick<Info, 'count' | 'pages' | 'next' | 'prev'>
+    )>, results?: Maybe<Array<Maybe<(
+      { __typename: 'Character' }
+      & Pick<Character, 'id' | 'name' | 'status' | 'species' | 'type' | 'gender' | 'image' | 'created'>
+      & { origin?: Maybe<(
+        { __typename: 'Location' }
+        & Pick<Location, 'id' | 'name' | 'type' | 'dimension'>
+      )>, episode?: Maybe<Array<Maybe<(
+        { __typename: 'Episode' }
+        & Pick<Episode, 'id' | 'episode' | 'name' | 'air_date'>
+      )>>> }
     )>>> }
   )> }
 );
 
 
-export const CharacterDocument = gql`
-    query Character($id: ID!) {
-  character(id: $id) {
-    id
-    name
-    image
-    species
-  }
-}
-    `;
-
-/**
- * __useCharacterQuery__
- *
- * To run a query within a React component, call `useCharacterQuery` and pass it any options that fit your needs.
- * When your component renders, `useCharacterQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCharacterQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useCharacterQuery(baseOptions: ApolloReactHooks.QueryHookOptions<CharacterQuery, CharacterQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useQuery<CharacterQuery, CharacterQueryVariables>(CharacterDocument, options);
-      }
-export function useCharacterLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CharacterQuery, CharacterQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useLazyQuery<CharacterQuery, CharacterQueryVariables>(CharacterDocument, options);
-        }
-export type CharacterQueryHookResult = ReturnType<typeof useCharacterQuery>;
-export type CharacterLazyQueryHookResult = ReturnType<typeof useCharacterLazyQuery>;
-export type CharacterQueryResult = ApolloReactCommon.QueryResult<CharacterQuery, CharacterQueryVariables>;
 export const CharactersDocument = gql`
     query Characters($page: Int) {
   characters(page: $page) {
+    info {
+      __typename
+      count
+      pages
+      next
+      prev
+    }
     results {
+      __typename
+      id
       name
       status
       species
@@ -294,15 +252,19 @@ export const CharactersDocument = gql`
       gender
       image
       created
+      origin {
+        __typename
+        id
+        name
+        type
+        dimension
+      }
       episode {
+        __typename
+        id
         episode
         name
-      }
-      origin {
-        name
-      }
-      location {
-        name
+        air_date
       }
     }
   }

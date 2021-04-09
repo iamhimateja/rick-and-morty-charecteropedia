@@ -6,7 +6,6 @@ type CharacterCardProps = {
     character: Character
 }
 
-
 const Wrapper = styled.div`
     display: flex;
   align-items: center;
@@ -24,11 +23,9 @@ const Image = styled.img`
   width: 150px;
 `
 
-const CharacterCard = ({ character }: CharacterCardProps) => {
-    return <Wrapper>
-        <Image src={character.image || ''} alt="icon" className="avatar" />
-        {character.name}
-    </Wrapper>
+const CharacterCard = (character: CharacterCardProps) => {
+    console.log(character);
+    return (<></>)
 }
 
 export default CharacterCard
