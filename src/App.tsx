@@ -39,9 +39,9 @@ const App = () => {
   });
   
   useEffect(() => {
-    console.log(currentCharacterID)
+    setCurrentPage(1)
     return () => {};
-  }, [currentCharacterID]);
+  }, [filterProperty]);
 
   const placeholdersBasedOnCurrentFilter: DynamicObjectHelper = {
     name: "Search by Name of the character",
@@ -196,12 +196,12 @@ const App = () => {
             </Form>
           </Header>
           <Section>
-            {data?.characters?.results?.map(result => 
+            {(data?.characters?.results || [])?.length > 0 ? data?.characters?.results?.map(result => 
               result && <CharacterCard 
                 key={result.id} 
                 character={result}
                 onClick={ShowCharacterDetails}
-            />)}
+            />) : <h2>No Data for current filter</h2>}
           </Section>
           <Footer>
             <div className="page-info">
@@ -216,7 +216,7 @@ const App = () => {
               >
                 {`< Prev`}
               </button>
-              <span>{currentPage} of {data?.characters?.info?.pages}</span>
+              <span>{currentPage} of {data?.characters?.info?.pages || 1}</span>
               <button onClick={() => {
                 setCurrentCharacterID("");
                 setCurrentPage(data?.characters?.info?.next || (currentPage + 1))

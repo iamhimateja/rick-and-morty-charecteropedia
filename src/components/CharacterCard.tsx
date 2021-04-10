@@ -67,7 +67,10 @@ const Image = styled.img`
 const DetailsWrap = styled.div`
   position: absolute;
   width: 100%;
-  padding: 20px;
+  height: 50px;
+  display: flex;
+  place-items: center;
+  padding-left: 20px;
   bottom: 0;
   left: 0;
   color: #000;
@@ -80,6 +83,27 @@ const DetailsWrap = styled.div`
 `;
 
 const EmojiWrap = styled.div`
+  position: absolute;
+  display: flex;
+  gap: 10px;
+  right: 35px;
+  top: -25px;
+
+  .emojiWrap {
+    position: relative;
+    width: 35px;
+    height: 35px;
+    background-color: #fff;
+    border-radius: 50%;
+
+    span {
+      position: absolute;
+      font-size: 25px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
 `;
 
 const CharacterCard = ({ character, onClick: showCharacterInfo }: CharacterCardProps) => {
@@ -89,9 +113,15 @@ const CharacterCard = ({ character, onClick: showCharacterInfo }: CharacterCardP
         <DetailsWrap className="details">
           {character.name}
           <EmojiWrap>
-            <span title={character.status || ""}>{getStatusEmoji(character)}</span>
-            <span title={character.species || ""}>{getSpeciesEmoji(character)}</span>
-            <span title={character.gender || ""}>{getGenderEmoji(character)}</span>
+            <div className="emojiWrap">
+              <span title={character.status || ""}>{getStatusEmoji(character)}</span>
+            </div>
+            <div className="emojiWrap">
+              <span title={character.species || ""}>{getSpeciesEmoji(character)}</span>
+            </div>
+            <div className="emojiWrap">
+              <span title={character.gender || ""}>{getGenderEmoji(character)}</span>
+            </div>
           </EmojiWrap>
         </DetailsWrap>
       </Anchor>
