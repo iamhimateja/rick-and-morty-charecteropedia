@@ -5,16 +5,18 @@ import Header from './components/Header'
 import Section from './components/Section';
 import Footer from './components/Footer';
 import CharacterCard from './components/CharacterCard';
-import { useCharacterQuery, useCharactersQuery, CharactersQuery, Scalars } from './graphql/types';
+import CharacterDetailsSidebar from './components/CharacterDetailsSidebar';
+import { useCharacterQuery, useCharactersQuery } from './graphql/types';
 
 const App = () => {
   interface DynamicObjectHelper {
     [prop: string]: string;
   }
 
-  const [currentCharacter, setCurrentCharacter] = useState("");
+  const [currentCharacterID, setCurrentCharacterID] = useState("");
   const [filterProperty, setFilterProperty] = useState<string>("name");
   const [filterValue, setFilterValue] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const searchInput = useRef<HTMLInputElement>(null);
 
   const getFilters = () => {
@@ -25,24 +27,21 @@ const App = () => {
 
   const graphQuery = useCharactersQuery({
     variables: {
-      page: 1,
+      page: currentPage,
       filters: getFilters()
     }
   });
   
-  const characterQuery = useCharacterQuery({
+  const { data: currentCharacterData } = useCharacterQuery({
     variables: {
-      id: currentCharacter
+      id: currentCharacterID
     }
   });
-
-  console.log(characterQuery.data);
   
   useEffect(() => {
-    console.log(currentCharacter);
-    
+    console.log(currentCharacterID)
     return () => {};
-  }, [currentCharacter]);
+  }, [currentCharacterID]);
 
   const placeholdersBasedOnCurrentFilter: DynamicObjectHelper = {
     name: "Search by Name of the character",
@@ -55,16 +54,23 @@ const App = () => {
     event?.preventDefault();
     const targetElement: any = event.target.tagName === "A" ? event.target : event.target.parentElement;
     const identifier: string = targetElement.dataset.id;
-    setCurrentCharacter(identifier)
+    setCurrentCharacterID(identifier)
   };
 
   const handleSearch = (event: any) => {
     event.preventDefault();
     const value = event.target.querySelector('input').value;
     if (value !== "") {
+      setCurrentPage(1)
+      setCurrentCharacterID("");
       setFilterValue(value)
     }
   };
+
+  const onCharacterInfoClose = (event: any) => {
+    event.preventDefault();
+    setCurrentCharacterID("");
+  }
 
   const Form = styled.form`
     display: flex;
@@ -155,45 +161,76 @@ const App = () => {
   if (graphQuery.loading) {
     return null
   } else {
+    console.log(graphQuery);
+    
     const { data } = graphQuery;
+
+    const itemsPerPage: number = 20;
     return (
-      <AppWrapper>
-        <Header>
-          <span>Rick and Morty Characteropedia</span>
-          <Form onSubmit={handleSearch}>
-            <SearchInput type="search" ref={searchInput} placeholder={ placeholdersBasedOnCurrentFilter[filterProperty]} defaultValue={filterValue || ""}/>
-            <Button type="button" onClick={(e) => {
-              e.preventDefault();
-              document.querySelector(".filterDropdown")?.classList.toggle("show")
-            }}>
-              Filter By: {filterProperty}
-            </Button>
-            <FilterDropdown className="filterDropdown">
-              <FilterDropdownListElement>
-                <FilterButton type='button' onClick={() => setFilterProperty("name")}>Name</FilterButton>
-              </FilterDropdownListElement>
-              <FilterDropdownListElement>
-                <FilterButton type='button' onClick={() => setFilterProperty("status")}>Status</FilterButton>
-              </FilterDropdownListElement>
-              <FilterDropdownListElement>
-                <FilterButton type='button' onClick={() => setFilterProperty("species")}>Species</FilterButton>
-              </FilterDropdownListElement>
-              <FilterDropdownListElement>
-                <FilterButton type='button' onClick={() => setFilterProperty("gender")}>Gender</FilterButton>
-              </FilterDropdownListElement>
-            </FilterDropdown>
-          </Form>
-        </Header>
-        <Section>
-          {data?.characters?.results?.map(result => 
-            result && <CharacterCard 
-              key={result.id} 
-              character={result}
-              onClick={ShowCharacterDetails}
-          />)}
-        </Section>
-        <Footer />
-      </AppWrapper>
+      <>
+        <AppWrapper className="mainDetails">
+          <Header>
+            <span>Rick and Morty Characteropedia</span>
+            <Form onSubmit={handleSearch}>
+              <SearchInput type="search" ref={searchInput} placeholder={ placeholdersBasedOnCurrentFilter[filterProperty]} defaultValue={filterValue || ""}/>
+              <Button type="button" onClick={(e) => {
+                e.preventDefault();
+                document.querySelector(".filterDropdown")?.classList.toggle("show")
+              }}>
+                Filter By: {filterProperty}
+              </Button>
+              <FilterDropdown className="filterDropdown">
+                <FilterDropdownListElement>
+                  <FilterButton type='button' onClick={() => setFilterProperty("name")}>Name</FilterButton>
+                </FilterDropdownListElement>
+                <FilterDropdownListElement>
+                  <FilterButton type='button' onClick={() => setFilterProperty("status")}>Status</FilterButton>
+                </FilterDropdownListElement>
+                <FilterDropdownListElement>
+                  <FilterButton type='button' onClick={() => setFilterProperty("species")}>Species</FilterButton>
+                </FilterDropdownListElement>
+                <FilterDropdownListElement>
+                  <FilterButton type='button' onClick={() => setFilterProperty("gender")}>Gender</FilterButton>
+                </FilterDropdownListElement>
+              </FilterDropdown>
+            </Form>
+          </Header>
+          <Section>
+            {data?.characters?.results?.map(result => 
+              result && <CharacterCard 
+                key={result.id} 
+                character={result}
+                onClick={ShowCharacterDetails}
+            />)}
+          </Section>
+          <Footer>
+            <div className="page-info">
+              {`${((currentPage * itemsPerPage) - itemsPerPage) + 1} - ${currentPage * itemsPerPage} of ${data?.characters?.info?.count}`}
+            </div>
+            <div className="pagination">
+              <button onClick={() => {
+                setCurrentCharacterID("");
+                setCurrentPage(data?.characters?.info?.prev || (currentPage - 1))
+              }}
+              disabled={!data?.characters?.info?.prev}
+              >
+                {`< Prev`}
+              </button>
+              <span>{currentPage} of {data?.characters?.info?.pages}</span>
+              <button onClick={() => {
+                setCurrentCharacterID("");
+                setCurrentPage(data?.characters?.info?.next || (currentPage + 1))
+              }}
+              disabled={!data?.characters?.info?.next}
+              >
+                {`Next >`}
+              </button>
+            </div>
+          </Footer>
+        </AppWrapper>
+
+        {currentCharacterData && currentCharacterData.character && <CharacterDetailsSidebar character={currentCharacterData.character} onClose={onCharacterInfoClose}></CharacterDetailsSidebar>}
+      </>
     );
   }
   

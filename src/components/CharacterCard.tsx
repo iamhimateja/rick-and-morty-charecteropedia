@@ -9,6 +9,39 @@ type CharacterCardProps={
   onClick: React.MouseEventHandler
 }
 
+const getStatusEmoji = (character: Character) => {
+  switch (character.status) {
+    case "Dead":
+      return "😵"
+    case "Alive":
+      return "🙂"
+    case "unknown":
+      return "🤔"
+  }
+}
+
+const getSpeciesEmoji = (character: Character) => {
+  switch (character.species) {
+    case "Human":
+      return "👤"
+    case "Alien":
+      return "👽"
+    case "unknown":
+      return "🤔"
+  }
+}
+
+const getGenderEmoji = (character: Character) => {
+  switch (character.gender) {
+    case "Male":
+      return "🧒"
+    case "Female":
+      return "👩"
+    case "unknown":
+      return "🤔"
+  }
+}
+
 const Anchor = styled.a`
   position: relative;
   display: flex;
@@ -26,7 +59,6 @@ const Anchor = styled.a`
     box-shadow: 0 3px 35px rgba(0, 0, 0, 0.1), 0 14px 24px rgba(0, 0, 0, 0.1)
   }
 `
-
 
 const Image = styled.img`
 
@@ -47,12 +79,20 @@ const DetailsWrap = styled.div`
   font-size: 12px;
 `;
 
+const EmojiWrap = styled.div`
+`;
+
 const CharacterCard = ({ character, onClick: showCharacterInfo }: CharacterCardProps) => {
     return  (
       <Anchor href="#0" data-id={character.id} onClick={showCharacterInfo}>
         <Image src={character.image || ''} alt="icon" className="avatar" />
         <DetailsWrap className="details">
           {character.name}
+          <EmojiWrap>
+            <span title={character.status || ""}>{getStatusEmoji(character)}</span>
+            <span title={character.species || ""}>{getSpeciesEmoji(character)}</span>
+            <span title={character.gender || ""}>{getGenderEmoji(character)}</span>
+          </EmojiWrap>
         </DetailsWrap>
       </Anchor>
     );
