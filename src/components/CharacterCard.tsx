@@ -1,33 +1,61 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Character } from '../graphql/types'
+import {
+  Character
+} from '../graphql/types'
 
-type CharacterCardProps = {
-    character: Character
+type CharacterCardProps={
+  character: Character,
+  onClick: React.MouseEventHandler
 }
 
-const Wrapper = styled.div`
-    display: flex;
+const Anchor = styled.a`
+  position: relative;
+  display: flex;
   align-items: center;
   justify-content: center;
   flex-flow: column;
-  margin: 0.5rem;
   background-color: white;
-  border: solid grey 1px;
-  width: 200px;
-  height: 200px;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all .6s cubic-bezier(.68,-.55,.27,1.55);
+  box-shadow: 0 0 0 1px rgba(9, 30, 66, 0.08), 0 2px 4px 1px rgba(9, 30, 66, 0.08);
+
+  &:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 3px 35px rgba(0, 0, 0, 0.1), 0 14px 24px rgba(0, 0, 0, 0.1)
+  }
 `
+
 
 const Image = styled.img`
- height: 150px;
-  width: 150px;
+
 `
 
-const CharacterCard = ({ character }: CharacterCardProps) => {
-    return  <Wrapper>
-    <Image src={character.image || ''} alt="icon" className="avatar" />
-    {character.name}
-</Wrapper>
+const DetailsWrap = styled.div`
+  position: absolute;
+  width: 100%;
+  padding: 20px;
+  bottom: 0;
+  left: 0;
+  color: #000;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(5px);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 12px;
+`;
+
+const CharacterCard = ({ character, onClick: showCharacterInfo }: CharacterCardProps) => {
+    return  (
+      <Anchor href="#0" data-id={character.id} onClick={showCharacterInfo}>
+        <Image src={character.image || ''} alt="icon" className="avatar" />
+        <DetailsWrap className="details">
+          {character.name}
+        </DetailsWrap>
+      </Anchor>
+    );
 }
 
 export default CharacterCard

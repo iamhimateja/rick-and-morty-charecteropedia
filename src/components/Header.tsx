@@ -1,12 +1,18 @@
 import styled from 'styled-components';
 
 const Header = styled.header`
+  position: sticky;
+  top: 0;
   background-color: #404652;
-  height: 60px;
   display: flex;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
   align-items: center;
   color: white;
-  padding: 0.25rem 2rem;
+  padding: 1rem;
+  margin-bottom: 1em;
+  z-index: 2;
 `
 
 export default Header;
