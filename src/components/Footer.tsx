@@ -20,12 +20,19 @@ const Footer = styled.footer`
       margin: 0 10px;
       border: 0;
       background-color: transparent;
+      box-shadow: 0 0 0 1px #656565;
       color: #fff;
       border-radius: 5px;
       padding: 10px 15px;
       cursor: pointer;
 
-      &:hover {
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+        color: #b3b3b3;
+      }
+
+      &:not(:disabled):hover {
         background-color: rgba(0, 0, 0, 0.3);
       }
     }

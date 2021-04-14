@@ -8,6 +8,92 @@ import CharacterCard from './components/CharacterCard';
 import CharacterDetailsSidebar from './components/CharacterDetailsSidebar';
 import { useCharacterQuery, useCharactersQuery } from './graphql/types';
 
+const Form = styled.form`
+  display: flex;
+  position: relative;
+  margin-left: auto
+`;
+
+const SearchInput = styled.input`
+  width: 600px;
+  padding: 10px;
+  background: #333842;
+  padding-left: 15px;
+  border-radius: 50px;
+  border: 0;
+  outline: none;
+  color: #d2d2d2;
+  letter-spacing: 1px;
+  transition: all .6s ease;
+
+  &:focus {
+    color: #333;
+    background: #fff;
+  }
+`;
+
+const Button = styled.button`
+  position: absolute;
+  height: calc(100% - 10px);
+  right: 5px;
+  border: 0;
+  border-radius: 50px;
+  padding: 0 10px;
+  top: 5px;
+  background: rgba(0, 0, 0, 0.28);
+  color: #ffffff;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all .6s ease;
+  outline: none;
+  cursor: pointer;
+
+  &:hover, &:focus {
+    background: #c2c2c2;
+    color: #747474;
+    font-weight: bold;
+  }
+`;
+
+const FilterDropdown = styled.ul`
+  position: absolute;
+  display: none;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 10;
+  min-width: 200px;
+  padding: 10px;
+  margin: 0;
+  border-radius: 15px;
+  list-style: none;
+  background: #fff;
+  box-shadow: 0 3px 35px rgb(0 0 0 / 10%), 0 14px 24px rgb(0 0 0 / 10%);
+  overflow: hidden;
+`;
+
+const FilterDropdownListElement = styled.li`
+  display: flex;
+`;
+
+const FilterButton = styled.button`
+  flex: 1 1;
+  text-align: left;
+  font-size: 13px;
+  border: 0;
+  background: #fff;
+  padding: 10px;
+  margin-bottom: 1px;
+  border-radius: 5px;
+  transition: all .6s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: #333842;
+    color: #fff;
+  }
+`;
+
 const App = () => {
   interface DynamicObjectHelper {
     [prop: string]: string;
@@ -60,7 +146,7 @@ const App = () => {
   const handleSearch = (event: any) => {
     event.preventDefault();
     const value = event.target.querySelector('input').value;
-    if (value !== "") {
+    if (filterValue !== value) {
       setCurrentPage(1)
       setCurrentCharacterID("");
       setFilterValue(value)
@@ -71,108 +157,19 @@ const App = () => {
     event.preventDefault();
     setCurrentCharacterID("");
   }
-
-  const Form = styled.form`
-    display: flex;
-    position: relative;
-    margin-left: auto
-  `;
-
-  const SearchInput = styled.input`
-    width: 600px;
-    padding: 10px;
-    background: #333842;
-    padding-left: 15px;
-    border-radius: 50px;
-    border: 0;
-    outline: none;
-    color: #d2d2d2;
-    letter-spacing: 1px;
-    transition: all .6s ease;
-
-    &:focus {
-      color: #333;
-      background: #fff;
-    }
-  `;
-
-  const Button = styled.button`
-    position: absolute;
-    height: calc(100% - 10px);
-    right: 5px;
-    border: 0;
-    border-radius: 50px;
-    padding: 0 10px;
-    top: 5px;
-    background: rgba(0, 0, 0, 0.28);
-    color: #ffffff;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all .6s ease;
-    outline: none;
-    cursor: pointer;
-
-    &:hover, &:focus {
-      background: #c2c2c2;
-      color: #747474;
-      font-weight: bold;
-    }
-  `;
-
-  const FilterDropdown = styled.ul`
-    position: absolute;
-    display: none;
-    top: calc(100% + 10px);
-    right: 0;
-    z-index: 10;
-    min-width: 200px;
-    padding: 10px;
-    margin: 0;
-    border-radius: 15px;
-    list-style: none;
-    background: #fff;
-    box-shadow: 0 3px 35px rgb(0 0 0 / 10%), 0 14px 24px rgb(0 0 0 / 10%);
-    overflow: hidden;
-  `;
-
-  const FilterDropdownListElement = styled.li`
-    display: flex;
-  `;
-
-  const FilterButton = styled.button`
-    flex: 1 1;
-    text-align: left;
-    font-size: 13px;
-    border: 0;
-    background: #fff;
-    padding: 10px;
-    margin-bottom: 1px;
-    border-radius: 5px;
-    transition: all .6s ease;
-    cursor: pointer;
-
-    &:hover {
-      background: #333842;
-      color: #fff;
-    }
-  `;
   
   if (graphQuery.loading) {
     return null
   } else {
-    console.log(graphQuery);
-    
     const { data } = graphQuery;
-
-    const itemsPerPage: number = 20;
+    const itemsPerPage: number = data?.characters?.results?.length || 20;
     return (
       <>
         <AppWrapper className="mainDetails">
           <Header>
             <span>Rick and Morty Characteropedia</span>
             <Form onSubmit={handleSearch}>
-              <SearchInput type="search" ref={searchInput} placeholder={ placeholdersBasedOnCurrentFilter[filterProperty]} defaultValue={filterValue || ""}/>
+              <SearchInput type="text" ref={searchInput} placeholder={ placeholdersBasedOnCurrentFilter[filterProperty]} defaultValue={filterValue || ""}/>
               <Button type="button" onClick={(e) => {
                 e.preventDefault();
                 document.querySelector(".filterDropdown")?.classList.toggle("show")

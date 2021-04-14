@@ -15,7 +15,7 @@ const getStatusEmoji = (character: Character) => {
       return "😵"
     case "Alive":
       return "🙂"
-    case "unknown":
+    default:
       return "🤔"
   }
 }
@@ -26,7 +26,13 @@ const getSpeciesEmoji = (character: Character) => {
       return "👤"
     case "Alien":
       return "👽"
-    case "unknown":
+    case "Robot":
+      return "🤖"
+    case "Mythological Creature":
+      return "😇"
+    case "Animal":
+      return "🐵"
+    default:
       return "🤔"
   }
 }
@@ -37,7 +43,7 @@ const getGenderEmoji = (character: Character) => {
       return "🧒"
     case "Female":
       return "👩"
-    case "unknown":
+    default:
       return "🤔"
   }
 }
@@ -80,6 +86,7 @@ const DetailsWrap = styled.div`
   text-transform: uppercase;
   letter-spacing: 2px;
   font-size: 12px;
+
 `;
 
 const EmojiWrap = styled.div`
@@ -114,13 +121,13 @@ const CharacterCard = ({ character, onClick: showCharacterInfo }: CharacterCardP
           {character.name}
           <EmojiWrap>
             <div className="emojiWrap">
-              <span title={character.status || ""}>{getStatusEmoji(character)}</span>
+              <span title={`Status: ${character.status || ""}`}>{getStatusEmoji(character)}</span>
             </div>
             <div className="emojiWrap">
-              <span title={character.species || ""}>{getSpeciesEmoji(character)}</span>
+              <span title={`Species: ${character.species || ""}`}>{getSpeciesEmoji(character)}</span>
             </div>
             <div className="emojiWrap">
-              <span title={character.gender || ""}>{getGenderEmoji(character)}</span>
+              <span title={`Gender: ${character.gender || ""}`}>{getGenderEmoji(character)}</span>
             </div>
           </EmojiWrap>
         </DetailsWrap>

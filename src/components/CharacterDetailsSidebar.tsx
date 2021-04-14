@@ -15,7 +15,7 @@ const getStatusEmoji = (character: Character) => {
       return "😵"
     case "Alive":
       return "🙂"
-    case "unknown":
+    default:
       return "🤔"
   }
 }
@@ -37,16 +37,16 @@ const CharacterInfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 300px;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.85);
-  box-shadow: inset 1px 0 0 0 #cecece;
-  top: 0;
-  right: 0;
-  z-index: 2;
+  height: calc(100% - 30px);
+  border-radius: 10px;
+  top: 15px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(10px);
   animation-name: ${openSidebarAnimation};
   animation-duration: 0.6s;
   animation-iteration-count: 1;
+  z-index: 2;
   overflow: hidden;
   overflow-y: auto;
 `;
@@ -115,22 +115,25 @@ const CharacterHeading = styled.div`
   text-transform: uppercase;
   margin: 10px 0;
   letter-spacing: 1px;
-  color: #395793;
+  color: #828282;
 `;
 
 const CharacterValue = styled.div`
   font-size: 20px;
+  color: #fff;
+  font-weight: bolder;
 `;
 
 const CharacterAppearances = styled.div`
   .episode {
     margin-bottom: 5px;
+    color: #fff;
+    font-weight: bolder;
+    line-height: 1.5;
   }
 `;
 
-const CharacterDetailsSidebar = ({ character, onClose }: CharacterDetailsSidebarProps) => {
-  console.log(character);
-  
+const CharacterDetailsSidebar = ({ character, onClose }: CharacterDetailsSidebarProps) => {  
   return (
     <CharacterInfoWrapper className="characterInfoWrapper">
       <CloseIcon onClick={onClose}>
