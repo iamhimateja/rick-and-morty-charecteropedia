@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 const App = styled.div`
+  position: relative;
   background-color: #485461;
   background-image: linear-gradient(315deg, #485461 0%, #28313b 74%);
   min-height: 100vh;

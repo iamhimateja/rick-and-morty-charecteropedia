@@ -7,6 +7,7 @@ import Footer from './components/Footer';
 import CharacterCard from './components/CharacterCard';
 import CharacterDetailsSidebar from './components/CharacterDetailsSidebar';
 import { useCharacterQuery, useCharactersQuery } from './graphql/types';
+import loader from "./images/loader.gif";
 
 const Form = styled.form`
   display: flex;
@@ -94,6 +95,36 @@ const FilterButton = styled.button`
   }
 `;
 
+const LoadingWrap = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  place-content: center;
+  place-items: center;
+  z-index: 999;
+  background: rgba(22, 21, 23, 0.95);
+  backdrop-filter: blur(10px);
+  
+  img {
+    opacity: 0.5;
+  }
+`;
+
+const NoData = styled.h2`
+  display: block;
+  padding: 5em;
+  background: #34404b;
+  border-radius: 30px;
+  color: #fff;
+  letter-spacing: 1px;
+  font-size: 20px;
+  text-transform: uppercase;
+  opacity: 0.5;
+`;
+
 const App = () => {
   interface DynamicObjectHelper {
     [prop: string]: string;
@@ -125,8 +156,7 @@ const App = () => {
   });
   
   useEffect(() => {
-    setCurrentPage(1)
-    return () => {};
+    setCurrentPage(1);
   }, [filterProperty]);
 
   const placeholdersBasedOnCurrentFilter: DynamicObjectHelper = {
@@ -157,52 +187,61 @@ const App = () => {
     event.preventDefault();
     setCurrentCharacterID("");
   }
-  
-  if (graphQuery.loading) {
-    return null
-  } else {
-    const { data } = graphQuery;
-    const itemsPerPage: number = data?.characters?.results?.length || 20;
-    return (
-      <>
-        <AppWrapper className="mainDetails">
-          <Header>
-            <span>Rick and Morty Characteropedia</span>
-            <Form onSubmit={handleSearch}>
-              <SearchInput type="text" ref={searchInput} placeholder={ placeholdersBasedOnCurrentFilter[filterProperty]} defaultValue={filterValue || ""}/>
-              <Button type="button" onClick={(e) => {
-                e.preventDefault();
-                document.querySelector(".filterDropdown")?.classList.toggle("show")
-              }}>
-                Filter By: {filterProperty}
-              </Button>
-              <FilterDropdown className="filterDropdown">
-                <FilterDropdownListElement>
-                  <FilterButton type='button' onClick={() => setFilterProperty("name")}>Name</FilterButton>
-                </FilterDropdownListElement>
-                <FilterDropdownListElement>
-                  <FilterButton type='button' onClick={() => setFilterProperty("status")}>Status</FilterButton>
-                </FilterDropdownListElement>
-                <FilterDropdownListElement>
-                  <FilterButton type='button' onClick={() => setFilterProperty("species")}>Species</FilterButton>
-                </FilterDropdownListElement>
-                <FilterDropdownListElement>
-                  <FilterButton type='button' onClick={() => setFilterProperty("gender")}>Gender</FilterButton>
-                </FilterDropdownListElement>
-              </FilterDropdown>
-            </Form>
-          </Header>
-          <Section>
-            {(data?.characters?.results || [])?.length > 0 ? data?.characters?.results?.map(result => 
-              result && <CharacterCard 
-                key={result.id} 
-                character={result}
-                onClick={ShowCharacterDetails}
-            />) : <h2>No Data for current filter</h2>}
-          </Section>
+
+  const { data } = graphQuery;
+  const itemsPerPage: number = 20;
+  return (
+    <>
+      <AppWrapper className="mainDetails">
+        <Header>
+          <span>Rick and Morty Characteropedia</span>
+          <Form onSubmit={handleSearch}>
+            <SearchInput type="text" ref={searchInput} placeholder={ placeholdersBasedOnCurrentFilter[filterProperty]} defaultValue={filterValue || ""}/>
+            <Button type="button" onClick={(e) => {
+              e.preventDefault();
+              document.querySelector(".filterDropdown")?.classList.toggle("show")
+            }}>
+              Filter By: {filterProperty}
+            </Button>
+            <FilterDropdown className="filterDropdown">
+              <FilterDropdownListElement>
+                <FilterButton type='button' onClick={() => setFilterProperty("name")}>Name</FilterButton>
+              </FilterDropdownListElement>
+              <FilterDropdownListElement>
+                <FilterButton type='button' onClick={() => setFilterProperty("status")}>Status</FilterButton>
+              </FilterDropdownListElement>
+              <FilterDropdownListElement>
+                <FilterButton type='button' onClick={() => setFilterProperty("species")}>Species</FilterButton>
+              </FilterDropdownListElement>
+              <FilterDropdownListElement>
+                <FilterButton type='button' onClick={() => setFilterProperty("gender")}>Gender</FilterButton>
+              </FilterDropdownListElement>
+            </FilterDropdown>
+          </Form>
+        </Header>
+        {
+          graphQuery.loading && 
+            <LoadingWrap>
+              <img src={loader} alt="Loading"/>
+            </LoadingWrap>
+        }
+        <Section>
+          {
+            !graphQuery.loading && 
+              (data?.characters?.results || [])?.length > 0 ? 
+                  data?.characters?.results?.map(result => 
+                  result && <CharacterCard 
+                    key={result.id} 
+                    character={result}
+                    onClick={ShowCharacterDetails}
+                />) : 
+                <NoData>No Data for current filter</NoData>
+          }
+        </Section>
+        {!graphQuery.loading && (data?.characters?.results || [])?.length > 0 &&
           <Footer>
             <div className="page-info">
-              {`${((currentPage * itemsPerPage) - itemsPerPage) + 1} - ${currentPage * itemsPerPage} of ${data?.characters?.info?.count}`}
+              {`${((currentPage * itemsPerPage) - itemsPerPage) + 1} - ${(currentPage * itemsPerPage) >= (data?.characters?.info?.count || 0) ? data?.characters?.info?.count : (currentPage * itemsPerPage) } of ${data?.characters?.info?.count}`}
             </div>
             <div className="pagination">
               <button onClick={() => {
@@ -224,13 +263,12 @@ const App = () => {
               </button>
             </div>
           </Footer>
-        </AppWrapper>
+        }
+      </AppWrapper>
 
-        {currentCharacterData && currentCharacterData.character && <CharacterDetailsSidebar character={currentCharacterData.character} onClose={onCharacterInfoClose}></CharacterDetailsSidebar>}
-      </>
-    );
-  }
-  
+      {currentCharacterData && currentCharacterData.character && <CharacterDetailsSidebar character={currentCharacterData.character} onClose={onCharacterInfoClose}></CharacterDetailsSidebar>}
+    </>
+  );
 }
 
 export default App;
