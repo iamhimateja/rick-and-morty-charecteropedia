@@ -133,7 +133,7 @@ const CharacterAppearances = styled.div`
   }
 `;
 
-const CharacterDetailsSidebar = ({ character, onClose }: CharacterDetailsSidebarProps) => {  
+const CharacterDetailsSidebar = ({ character, onClose }: CharacterDetailsSidebarProps) => {
   return (
     <CharacterInfoWrapper className="characterInfoWrapper">
       <CloseIcon onClick={onClose}>

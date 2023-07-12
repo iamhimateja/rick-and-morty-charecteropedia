@@ -197,7 +197,7 @@ const App = () => {
           <span>Rick and Morty Characteropedia</span>
           <Form onSubmit={handleSearch}>
             <SearchInput type="text" ref={searchInput} placeholder={ placeholdersBasedOnCurrentFilter[filterProperty]} defaultValue={filterValue || ""}/>
-            <Button type="button" onClick={(e) => {
+            <Button type="button" onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.preventDefault();
               document.querySelector(".filterDropdown")?.classList.toggle("show")
             }}>
@@ -220,21 +220,23 @@ const App = () => {
           </Form>
         </Header>
         {
-          graphQuery.loading && 
+          graphQuery.loading &&
             <LoadingWrap>
               <img src={loader} alt="Loading"/>
             </LoadingWrap>
         }
         <Section>
           {
-            !graphQuery.loading && 
-              (data?.characters?.results || [])?.length > 0 ? 
-                  data?.characters?.results?.map(result => 
-                  result && <CharacterCard 
-                    key={result.id} 
-                    character={result}
-                    onClick={ShowCharacterDetails}
-                />) : 
+            !graphQuery.loading &&
+              (data?.characters?.results || [])?.length > 0 ?
+                  data?.characters?.results?.map(result =>
+                    result &&
+                      <CharacterCard
+                        key={result.id}
+                        character={result}
+                        onClick={ShowCharacterDetails}
+                      />
+                  ) :
                 <NoData>No Data for current filter</NoData>
           }
         </Section>
@@ -266,7 +268,9 @@ const App = () => {
         }
       </AppWrapper>
 
-      {currentCharacterData && currentCharacterData.character && <CharacterDetailsSidebar character={currentCharacterData.character} onClose={onCharacterInfoClose}></CharacterDetailsSidebar>}
+      {(currentCharacterData && currentCharacterData.character) &&
+        <CharacterDetailsSidebar character={currentCharacterData.character} onClose={onCharacterInfoClose} />
+      }
     </>
   );
 }
